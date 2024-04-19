@@ -1,0 +1,70 @@
+AUSTINE OTIENO   SCT222-0530/2022
+KELVIN KIMANI    SCT222-0291/2022
+KEVIN OKUKU      SCT222-0356/2022
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* constructBST(int inOrder[], int postOrder[], int inStart, int inEnd, int postStart, int postEnd) {
+    if (inStart > inEnd || postStart > postEnd) {
+        return NULL;
+    }
+
+    Node* root = (Node*)malloc(sizeof(Node));
+    root->data = postOrder[postEnd];
+
+    int inIndex;
+    for (inIndex = inStart; inIndex <= inEnd; inIndex++) {
+        if (inOrder[inIndex] == root->data) {
+            break;
+        }
+    }
+
+    root->left = constructBST(inOrder, postOrder, inStart, inIndex - 1, postStart, postStart + inIndex - inStart - 1);
+    root->right = constructBST(inOrder, postOrder, inIndex + 1, inEnd, postStart + inIndex - inStart, postEnd - 1);
+
+    return root;
+}
+
+void printBFS(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    Node* queue[100];
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+
+    while (front < rear) {
+        Node* current = queue[front++];
+        printf("%d ", current->data);
+
+        if (current->left != NULL) {
+            queue[rear++] = current->left;
+        }
+        if (current->right != NULL) {
+            queue[rear++] = current->right;
+        }
+    }
+}
+
+int main() {
+    int inOrder[] = {5, 10, 15, 20, 25, 30, 45};
+    int postOrder[] = {5, 15, 10, 25, 45, 30, 20};
+
+    int n = sizeof(inOrder) / sizeof(inOrder[0]);
+
+    Node* root = constructBST(inOrder, postOrder, 0, n - 1, 0, n - 1);
+
+    printf("BFS Traversal: ");
+    printBFS(root);
+
+    return 0;
+}
